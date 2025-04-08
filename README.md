@@ -7,7 +7,7 @@ API E-commerce RESTful avec architecture MVC, gérant produits, clients et comma
 ## Installation et Lancement
 
 ### Prérequis
-- Docker et Docker Compose installés
+- Docker 
 - Git pour cloner le projet
 
 ### Configuration initiale
