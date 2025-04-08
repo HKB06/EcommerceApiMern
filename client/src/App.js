@@ -4,133 +4,133 @@ import './App.css';
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 function App() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
+  const [produits, setProduits] = useState([]);
+  const [chargement, setChargement] = useState(true);
+  const [erreur, setErreur] = useState(null);
+  const [pageActuelle, setPageActuelle] = useState(1);
+  const [nombrePages, setNombrePages] = useState(0);
+  const [afficherFormulaire, setAfficherFormulaire] = useState(false);
+  const [donnees, setDonnees] = useState({
+    nom: '',
     description: '',
-    price: '',
+    prix: '',
     stock: ''
   });
-  const [editingId, setEditingId] = useState(null);
+  const [idModification, setIdModification] = useState(null);
 
   useEffect(() => {
-    fetchProducts(currentPage);
-  }, [currentPage]);
+    chargerProduits(pageActuelle);
+  }, [pageActuelle]);
 
-  const fetchProducts = async (page) => {
+  const chargerProduits = async (page) => {
     try {
-      setLoading(true);
-      const response = await fetch(`${API_URL}/products?page=${page}&limit=5`);
-      const data = await response.json();
-      setProducts(data.docs);
-      setTotalPages(data.totalPages);
+      setChargement(true);
+      const reponse = await fetch(`${API_URL}/products?page=${page}&limit=5`);
+      const data = await reponse.json();
+      setProduits(data.docs);
+      setNombrePages(data.totalPages);
     } catch (err) {
-      setError(err.message);
+      setErreur(err.message);
     } finally {
-      setLoading(false);
+      setChargement(false);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const gererSoumission = async (e) => {
     e.preventDefault();
     try {
-      const method = editingId ? 'PUT' : 'POST';
-      const url = editingId 
-        ? `${API_URL}/products/${editingId}`
+      const methode = idModification ? 'PUT' : 'POST';
+      const url = idModification 
+        ? `${API_URL}/products/${idModification}`
         : `${API_URL}/products`;
 
       await fetch(url, {
-        method,
+        method: methode,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...formData,
-          price: Number(formData.price),
-          stock: Number(formData.stock)
+          ...donnees,
+          prix: Number(donnees.prix),
+          stock: Number(donnees.stock)
         })
       });
 
-      fetchProducts(currentPage);
-      setShowForm(false);
-      setFormData({ name: '', description: '', price: '', stock: '' });
-      setEditingId(null);
+      chargerProduits(pageActuelle);
+      setAfficherFormulaire(false);
+      setDonnees({ nom: '', description: '', prix: '', stock: '' });
+      setIdModification(null);
     } catch (err) {
-      setError(err.message);
+      setErreur(err.message);
     }
   };
 
-  const handleEdit = (product) => {
-    setFormData({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      stock: product.stock
+  const gererModification = (produit) => {
+    setDonnees({
+      nom: produit.nom,
+      description: produit.description,
+      prix: produit.prix,
+      stock: produit.stock
     });
-    setEditingId(product._id);
-    setShowForm(true);
+    setIdModification(produit._id);
+    setAfficherFormulaire(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+  const gererSuppression = async (id) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
       try {
         await fetch(`${API_URL}/products/${id}`, { method: 'DELETE' });
-        fetchProducts(currentPage);
+        chargerProduits(pageActuelle);
       } catch (err) {
-        setError(err.message);
+        setErreur(err.message);
       }
     }
   };
 
-  if (loading) return <div className="loading">Loading...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (chargement) return <div className="loading">Chargement...</div>;
+  if (erreur) return <div className="error">Erreur: {erreur}</div>;
 
   return (
     <div className="App">
       <header className="header">
-        <h1>E-commerce Products</h1>
+        <h1>Produits E-commerce</h1>
         <button 
           className="add-button"
           onClick={() => {
-            setShowForm(true);
-            setEditingId(null);
-            setFormData({ name: '', description: '', price: '', stock: '' });
+            setAfficherFormulaire(true);
+            setIdModification(null);
+            setDonnees({ nom: '', description: '', prix: '', stock: '' });
           }}
         >
-          Add New Product
+          Ajouter un Produit
         </button>
       </header>
 
-      {showForm && (
+      {afficherFormulaire && (
         <div className="form-overlay">
-          <form className="product-form" onSubmit={handleSubmit}>
-            <h2>{editingId ? 'Edit Product' : 'Add New Product'}</h2>
+          <form className="product-form" onSubmit={gererSoumission}>
+            <h2>{idModification ? 'Modifier le Produit' : 'Ajouter un Produit'}</h2>
             <div className="form-group">
-              <label>Name</label>
+              <label>Nom</label>
               <input
                 type="text"
-                value={formData.name}
-                onChange={e => setFormData({...formData, name: e.target.value})}
+                value={donnees.nom}
+                onChange={e => setDonnees({...donnees, nom: e.target.value})}
                 required
               />
             </div>
             <div className="form-group">
               <label>Description</label>
               <textarea
-                value={formData.description}
-                onChange={e => setFormData({...formData, description: e.target.value})}
+                value={donnees.description}
+                onChange={e => setDonnees({...donnees, description: e.target.value})}
               />
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>Price ($)</label>
+                <label>Prix (€)</label>
                 <input
                   type="number"
-                  value={formData.price}
-                  onChange={e => setFormData({...formData, price: e.target.value})}
+                  value={donnees.prix}
+                  onChange={e => setDonnees({...donnees, prix: e.target.value})}
                   required
                   min="0"
                   step="0.01"
@@ -140,8 +140,8 @@ function App() {
                 <label>Stock</label>
                 <input
                   type="number"
-                  value={formData.stock}
-                  onChange={e => setFormData({...formData, stock: e.target.value})}
+                  value={donnees.stock}
+                  onChange={e => setDonnees({...donnees, stock: e.target.value})}
                   required
                   min="0"
                 />
@@ -149,14 +149,14 @@ function App() {
             </div>
             <div className="form-buttons">
               <button type="submit" className="btn-primary">
-                {editingId ? 'Update' : 'Create'}
+                {idModification ? 'Modifier' : 'Créer'}
               </button>
               <button 
                 type="button" 
                 className="btn-secondary"
-                onClick={() => setShowForm(false)}
+                onClick={() => setAfficherFormulaire(false)}
               >
-                Cancel
+                Annuler
               </button>
             </div>
           </form>
@@ -164,28 +164,28 @@ function App() {
       )}
 
       <div className="products-grid">
-        {products.map(product => (
-          <div key={product._id} className="product-card">
+        {produits.map(produit => (
+          <div key={produit._id} className="product-card">
             <div className="product-content">
-              <h3>{product.name}</h3>
-              <p className="description">{product.description}</p>
+              <h3>{produit.nom}</h3>
+              <p className="description">{produit.description}</p>
               <div className="product-details">
-                <p className="price">Price: ${product.price}</p>
-                <p className="stock">Stock: {product.stock}</p>
+                <p className="price">Prix: {produit.prix}€</p>
+                <p className="stock">Stock: {produit.stock}</p>
               </div>
             </div>
             <div className="card-buttons">
               <button 
                 className="btn-edit" 
-                onClick={() => handleEdit(product)}
+                onClick={() => gererModification(produit)}
               >
-                Edit
+                Modifier
               </button>
               <button 
                 className="btn-delete" 
-                onClick={() => handleDelete(product._id)}
+                onClick={() => gererSuppression(produit._id)}
               >
-                Delete
+                Supprimer
               </button>
             </div>
           </div>
@@ -195,18 +195,18 @@ function App() {
       <div className="pagination">
         <button 
           className="btn-nav"
-          onClick={() => setCurrentPage(p => p - 1)}
-          disabled={currentPage === 1}
+          onClick={() => setPageActuelle(p => p - 1)}
+          disabled={pageActuelle === 1}
         >
-          Previous
+          Précédent
         </button>
-        <span>Page {currentPage} of {totalPages}</span>
+        <span>Page {pageActuelle} sur {nombrePages}</span>
         <button 
           className="btn-nav"
-          onClick={() => setCurrentPage(p => p + 1)}
-          disabled={currentPage === totalPages}
+          onClick={() => setPageActuelle(p => p + 1)}
+          disabled={pageActuelle === nombrePages}
         >
-          Next
+          Suivant
         </button>
       </div>
     </div>
