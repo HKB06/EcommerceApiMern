@@ -117,4 +117,4 @@ Retour JSON :
 Structure MVC, routes REST, run.sh pour lancer via Docker, test.sh pour vérifier le fonctionnement. Extensible avec validations, authentification, etc.
 
 ## Contributeur
-Hugo Khaled Brotons / Nicolas Draperi / Nail Benamer
+Hugo Khaled Brotons 

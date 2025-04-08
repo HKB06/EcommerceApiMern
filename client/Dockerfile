@@ -10,6 +10,6 @@ COPY . .
 COPY .env* ./
 RUN if [ ! -f .env ]; then cp .env.example .env; fi
 
-EXPOSE 5000
+EXPOSE 3000
 
 CMD ["npm", "start"]
