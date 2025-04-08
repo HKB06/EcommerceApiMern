@@ -68,47 +68,72 @@ API E-commerce RESTful avec architecture MVC, gérant produits, clients et comma
 
 ---
 
-## Configuration & Lancement
-### Via Docker
-1. Lancer Docker  
-2. Dans le dossier du projet :  
-    ```bash
-    ./run.sh
-    npm install
-    npm start
-    ```
-    L’API écoute sur http://localhost:5000
+## Installation et Lancement
 
+### Prérequis
+- Docker et Docker Compose installés
+- Git pour cloner le projet
+
+### Configuration initiale
+1. Cloner le projet et accéder à la branche :
+```bash
+git clone https://github.com/HKB06/EcommerceApiMern.git
+cd EcommerceApiMern
+git checkout docker-exo
+```
+
+2. Configurer les variables d'environnement :
+
+```bash
+# Pour l'API
+cp .env.example .env
+
+
+# Pour le frontend React
+cd client
+cp .env.example .env
+cd ..
+```
+### Lancement avec Docker
+1. S'assurer que Docker est démarré
+2. Lancer l'application complète :
+
+```bash
+./run.sh
+```
+Ce script va :
+
+Arrêter les conteneurs existants (si présents)
+Créer le réseau Docker
+Construire et démarrer les conteneurs :
+MongoDB (db-container)
+API Express (express-app)
+Frontend React (react-app)
+Accès à l'application
+Interface utilisateur : http://localhost:3000
+API : http://localhost:5000
+Base de données : mongodb://localhost:27017
+Commandes Docker utiles
+bash
+Copy Code
+# Voir les logs des conteneurs
+docker logs express-app    # Logs de l'API
+docker logs react-app      # Logs du frontend
+docker logs db-container   # Logs de MongoDB
+
+# Arrêter les conteneurs
+docker stop express-app react-app db-container
+
+# Supprimer les conteneurs
+docker rm express-app react-app db-container
+
+# Voir les conteneurs en cours d'exécution
+docker ps
 ### Script de test
 Le fichier test.sh envoie des requêtes (produits, clients, commandes).  
 Pour l’exécuter :  
 ```bash
 ./test.sh
-```
-
-### Bonus
-- Recherche : GET /api/products?search=lap  
-- Pagination : GET /api/products?page=2&limit=3  
-- Validations : vérifier price ou stock négatif
-
----
-
-## Exemple de commande directe
-```bash
-curl -X POST --json '{
-  "products": ["<ID_PRODUIT>"]
-}' http://localhost:5000/api/orders/direct/<ID_CLIENT>
-```
-Retour JSON :
-```json
-{
-  "message": "Order created successfully",
-  "order": {
-     "_id": "<ID_DE_LA_COMMANDE>",
-     "customer": "<ID_CLIENT>",
-     "products": ["<ID_PRODUIT>"]
-  }
-}
 ```
 
 ---
