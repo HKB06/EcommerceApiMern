@@ -35,7 +35,7 @@ cd ..
 2. Lancer l'application complète :
 
 ```bash
-./run.sh
+docker-compose up --build -d
 ```
 Ce script va :
 
